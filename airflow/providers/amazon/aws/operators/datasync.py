@@ -21,6 +21,7 @@ Create, get, update, execute and delete an AWS DataSync Task.
 
 import logging
 import random
+from typing import Optional
 
 from airflow.exceptions import AirflowException
 from airflow.models import BaseOperator
@@ -30,7 +31,7 @@ from airflow.utils.decorators import apply_defaults
 
 # pylint: disable=too-many-instance-attributes, too-many-arguments
 class AWSDataSyncOperator(BaseOperator):
-    r"""Find, Create, Update, Execute and Delete AWS DataSync Tasks.
+    """Find, Create, Update, Execute and Delete AWS DataSync Tasks.
 
     If ``do_xcom_push`` is True, then the DataSync TaskArn and TaskExecutionArn
     which were executed will be pushed to an XCom.
@@ -110,19 +111,19 @@ class AWSDataSyncOperator(BaseOperator):
     def __init__(
         self,
         *,
-        aws_conn_id="aws_default",
-        wait_interval_seconds=5,
-        task_arn=None,
-        source_location_uri=None,
-        destination_location_uri=None,
-        allow_random_task_choice=False,
-        allow_random_location_choice=False,
-        create_task_kwargs=None,
-        create_source_location_kwargs=None,
-        create_destination_location_kwargs=None,
-        update_task_kwargs=None,
-        task_execution_kwargs=None,
-        delete_task_after_execution=False,
+        aws_conn_id: str = "aws_default",
+        wait_interval_seconds: int = 5,
+        task_arn: Optional[str] = None,
+        source_location_uri: Optional[str] = None,
+        destination_location_uri: Optional[str] = None,
+        allow_random_task_choice: bool = False,
+        allow_random_location_choice: bool = False,
+        create_task_kwargs: Optional[dict] = None,
+        create_source_location_kwargs: Optional[dict] = None,
+        create_destination_location_kwargs: Optional[dict] = None,
+        update_task_kwargs: Optional[dict] = None,
+        task_execution_kwargs: Optional[dict] = None,
+        delete_task_after_execution: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -138,16 +139,12 @@ class AWSDataSyncOperator(BaseOperator):
         self.allow_random_task_choice = allow_random_task_choice
         self.allow_random_location_choice = allow_random_location_choice
 
-        self.create_task_kwargs = create_task_kwargs if create_task_kwargs else {}
-        self.create_source_location_kwargs = {}
-        if create_source_location_kwargs:
-            self.create_source_location_kwargs = create_source_location_kwargs
-        self.create_destination_location_kwargs = {}
-        if create_destination_location_kwargs:
-            self.create_destination_location_kwargs = create_destination_location_kwargs
+        self.create_task_kwargs = create_task_kwargs or {}
+        self.create_source_location_kwargs = create_source_location_kwargs or {}
+        self.create_destination_location_kwargs = create_destination_location_kwargs or {}
 
-        self.update_task_kwargs = update_task_kwargs if update_task_kwargs else {}
-        self.task_execution_kwargs = task_execution_kwargs if task_execution_kwargs else {}
+        self.update_task_kwargs = update_task_kwargs or {}
+        self.task_execution_kwargs = task_execution_kwargs or {}
         self.delete_task_after_execution = delete_task_after_execution
 
         # Validations
